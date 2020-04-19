@@ -2,8 +2,9 @@ import calendar as clndr
 import datetime
 import sys
 
-__version__ = "0.0.11"
-__author__ = "SaitoTsutomu <tsutomu.saito@beproud.jp>"
+# see pyproject.toml
+__version__ = "0.0.12"
+__author__ = "Saito Tsutomu <tsutomu7@hotmail.co.jp>"
 
 
 def holiday(year):
