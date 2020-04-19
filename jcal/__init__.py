@@ -3,7 +3,7 @@ import datetime
 import sys
 
 # see pyproject.toml
-__version__ = "0.0.12"
+__version__ = "0.0.13"
 __author__ = "Saito Tsutomu <tsutomu7@hotmail.co.jp>"
 
 
@@ -12,26 +12,12 @@ def holiday(year):
     res, t = [], datetime.timedelta(1)
     sp = int(20.8431 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
     au = int(23.2488 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
-    hs = [
-        (1, 1),
-        (1, -2),
-        (2, 11),
-        (2, 23),
-        (3, sp),
-        (4, 29),
-        (5, 3),
-        (5, 4),
-        (5, 5),
-        (7, -3),
-        (8, 11),
-        (9, -3),
-        (9, au),
-        (10, -2),
-        (11, 3),
-        (11, 23),
-    ]
+    hs = [(1, 1), (1, -2), (2, 11), (2, 23), (3, sp), (4, 29), (5, 3), (5, 4), (5, 5)]
+    hs += [(7, -3), (8, 11), (9, -3), (9, au), (10, -2), (11, 3), (11, 23)]
     if year == 2019:
         hs.extend([(5, 1), (10, 22)])
+    elif year == 2020:
+        hs = list(set(hs) - {(7, -3), (8, 11), (10, -2)} | {(7, 23), (7, 24), (8, 10)})
     for m, d in hs:
         dt = datetime.date(year, m, max(1, d))
         if d < 0:
