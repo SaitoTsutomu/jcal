@@ -1,4 +1,4 @@
-`jcal` is a package for Japanese holiday.
+`jcal` is a package for Japanese holiday at 2019-2021.
 https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html
 ::
 

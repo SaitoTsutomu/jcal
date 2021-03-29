@@ -1,6 +1,7 @@
 import calendar as clndr
 import datetime
 import sys
+from typing import Set
 
 # see pyproject.toml
 __version__ = "0.0.13"
@@ -8,16 +9,18 @@ __author__ = "Saito Tsutomu <tsutomu7@hotmail.co.jp>"
 
 
 def holiday(year):
-    """Japanese holiday @2019"""
+    """Japanese holiday at 2019-2021"""
     res, t = [], datetime.timedelta(1)
     sp = int(20.8431 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
     au = int(23.2488 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
     hs = [(1, 1), (1, -2), (2, 11), (2, 23), (3, sp), (4, 29), (5, 3), (5, 4), (5, 5)]
     hs += [(7, -3), (8, 11), (9, -3), (9, au), (10, -2), (11, 3), (11, 23)]
     if year == 2019:
-        hs.extend([(5, 1), (10, 22)])
+        hs = list(set(hs) - {(2, 23)} | {(5, 1), (10, 22)})
     elif year == 2020:
         hs = list(set(hs) - {(7, -3), (8, 11), (10, -2)} | {(7, 23), (7, 24), (8, 10)})
+    elif year == 2021:
+        hs = list(set(hs) - {(7, -3), (8, 11), (10, -2)} | {(7, 22), (7, 23), (8, 8)})
     for m, d in hs:
         dt = datetime.date(year, m, max(1, d))
         if d < 0:
@@ -36,7 +39,7 @@ def holiday(year):
 
 class ColorTextCalendar(clndr.TextCalendar):
     _theyear = -1
-    _holiday = {}
+    _holiday: Set[datetime.date] = set()
     _themonth = -1
 
     @staticmethod
@@ -46,9 +49,8 @@ class ColorTextCalendar(clndr.TextCalendar):
 
     @staticmethod
     def _day(day):
-        return datetime.date(
-            ColorTextCalendar._theyear, ColorTextCalendar._themonth, day
-        )
+        cls = ColorTextCalendar
+        return datetime.date(cls._theyear, cls._themonth, day)
 
     def formatday(self, day, weekday, width):
         return (
@@ -63,13 +65,8 @@ class ColorTextCalendar(clndr.TextCalendar):
 
     def formatweekday(self, day, width):
         s = super().formatweekday(day, width)
-        return (
-            "\x1b[1;31m%s\x1b[0m" % s
-            if day == 6
-            else "\x1b[1;36m%s\x1b[0m" % s
-            if day == 5
-            else s
-        )
+        f1, f2 = "\x1b[1;31m%s\x1b[0m", "\x1b[1;36m%s\x1b[0m"
+        return f1 % s if day == 6 else f2 % s if day == 5 else s
 
     def formatmonth(self, theyear, themonth, width, withyear=True):
         ColorTextCalendar._set_theyear(theyear)
