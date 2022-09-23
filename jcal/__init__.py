@@ -3,13 +3,14 @@ import datetime
 import sys
 from typing import Set
 
-# see pyproject.toml
-__version__ = "0.0.13"
-__author__ = "Saito Tsutomu <tsutomu7@hotmail.co.jp>"
 
+def holiday(year: int) -> set[datetime.date]:
+    """日本の休日（2019-2023）
 
-def holiday(year):
-    """Japanese holiday at 2019-2021"""
+    :param year: Year
+    :return: 休日（「国民の祝日に関する法律」第3条）の集合
+             （同第1条の国民の祝日ではないことに注意）
+    """
     res, t = [], datetime.timedelta(1)
     sp = int(20.8431 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
     au = int(23.2488 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
