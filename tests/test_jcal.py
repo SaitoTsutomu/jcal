@@ -27,5 +27,5 @@ def test_holiday2022():
 
 def test_holiday2023():
     actual = " ".join(f"{dt.month}/{dt.day}" for dt in sorted(holiday(2023)))
-    expect = "1/2 1/10 2/11 2/23 3/21 4/29 5/3 5/4 5/5 7/17 8/11 9/18 9/23 10/9 11/3 11/23"
+    expect = "1/2 1/9 2/11 2/23 3/21 4/29 5/3 5/4 5/5 7/17 8/11 9/18 9/23 10/9 11/3 11/23"
     assert actual == expect
