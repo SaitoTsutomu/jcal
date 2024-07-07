@@ -1,57 +1,129 @@
 import calendar as clndr
 import datetime
 import sys
+import warnings
 from typing import Set
 
+_1DAY = datetime.timedelta(days=1)
+MIN_YEAR: int = 2000
+MAX_YEAR: int = 2026
 
-def holiday(year: int) -> set[datetime.date]:
-    """日本の休日（2019-2023）
 
-    :param year: Year
-    :return: 休日（「国民の祝日に関する法律」第3条）の集合
-             （同第1条の国民の祝日ではないことに注意）
-    """
-    res, t = [], datetime.timedelta(1)
+class DateWithName(datetime.date):
+    """名前付きdate"""
+
+    def __new__(cls, year: int, month: int, day: int, name: str = ""):
+        dt = super().__new__(cls, year, month, day)
+        dt.name = name
+        return dt
+
+    def __repr__(self):
+        return f"{self} ({self.name})"
+
+    def replace(self, **kwargs) -> "DateWithName":
+        year = kwargs.pop("year", self.year)
+        month = kwargs.pop("month", self.month)
+        day = kwargs.pop("day", self.day)
+        name = kwargs.pop("name", self.name)
+        if kwargs:
+            k = next(iter(kwargs))
+            raise TypeError(f"'{k}' is an invalid keyword argument for replace()")
+        return DateWithName(year, month, day, name)
+
+
+def _japanese_holidays(year: int) -> list[DateWithName]:
+    """振替休日や国民の休日を含まない日本の祝日"""
     sp = int(20.8431 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
     au = int(23.2488 + 0.242194 * (year - 1980) - (int)((year - 1980) / 4))
-    hs = [(1, 1), (1, -2), (2, 11), (2, 23), (3, sp), (4, 29), (5, 3), (5, 4), (5, 5)]
-    hs += [(7, -3), (8, 11), (9, -3), (9, au), (10, -2), (11, 3), (11, 23)]
-    if year == 2019:
-        hs = list(set(hs) - {(2, 23)} | {(5, 1), (10, 22)})
-    elif year == 2020:
-        hs = list(set(hs) - {(7, -3), (8, 11), (10, -2)} | {(7, 23), (7, 24), (8, 10)})
-    elif year == 2021:
-        hs = list(set(hs) - {(7, -3), (8, 11), (10, -2)} | {(7, 22), (7, 23), (8, 8)})
-    for m, d in hs:
-        dt = datetime.date(year, m, max(1, d))
-        if d < 0:
-            dt += ((7 - dt.weekday()) % 7 + 7 * (-1 - d)) * t
-        if dt.weekday() == 6:
-            dt += t
-        while dt in res:
-            dt += t
-        res.append(dt)
-    res = sorted(res)
-    for d1, d2 in zip(res[:-1], res[1:]):
-        if (d2 - d1).days == 2:
-            res.append(d1 + datetime.timedelta(1))
-    return set(res)
+    sh = {
+        (1, 1, "元日"),
+        (1, -2, "成人の日"),
+        (2, 11, "建国記念の日"),
+        (2, 23, "天皇誕生日"),
+        (3, sp, "春分の日"),
+        (4, 29, "昭和の日"),
+        (5, 3, "憲法記念日"),
+        (5, 4, "みどりの日"),
+        (5, 5, "こどもの日"),
+        (7, -3, "海の日"),
+        (8, 11, "山の日"),
+        (9, -3, "敬老の日"),
+        (9, au, "秋分の日"),
+        (10, -2, "スポーツの日"),
+        (11, 3, "文化の日"),
+        (11, 23, "勤労感謝の日"),
+    }
+    # 海の日の調整
+    if year <= 2002:
+        sh -= {(7, -3, "海の日"), (9, -3, "敬老の日")}
+        sh |= {(7, 20, "海の日"), (9, 15, "敬老の日")}
+    # みどりの日の調整
+    if year <= 2006:
+        sh -= {(4, 29, "昭和の日"), (5, 4, "みどりの日")}
+        sh.add((4, 29, "みどりの日"))
+    # 山の日の調整
+    if year <= 2015:
+        sh.remove((8, 11, "山の日"))
+    if year <= 2019:
+        sh -= {(2, 23, "天皇誕生日"), (10, -2, "スポーツの日")}
+        # 天皇誕生日の調整
+        if year == 2019:
+            sh |= {(5, 1, "天皇の即位の日"), (10, 22, "即位礼正殿の儀が行われる日")}
+        else:
+            sh.add((12, 23, "天皇誕生日"))
+        # スポーツの日の調整
+        sh.add((10, -2, "体育の日"))
+    # 東京オリンピックの調整
+    if 2020 <= year <= 2021:
+        sh -= {(7, -3, "海の日"), (8, 11, "山の日"), (10, -2, "スポーツの日")}
+        if year == 2020:
+            sh |= {(7, 23, "海の日"), (7, 24, "スポーツの日"), (8, 10, "山の日")}
+        elif year == 2021:
+            sh |= {(7, 22, "海の日"), (7, 23, "スポーツの日"), (8, 8, "山の日")}
+    jh = []
+    for month, day, name in sh:
+        dt = datetime.date(year, month, max(1, day))
+        if day < 0:  # 第N月曜日の計算
+            dt += ((7 - dt.weekday()) % 7 + 7 * (-1 - day)) * _1DAY
+        jh.append(DateWithName(dt.year, dt.month, dt.day, name))
+    return sorted(jh)
+
+
+def holidays(year: int) -> set[DateWithName]:
+    if not (MIN_YEAR <= year <= MAX_YEAR):
+        warnings.warn(f"Not applicable for the year {year}.", DeprecationWarning, stacklevel=2)
+    jh = _japanese_holidays(year)
+    sh = set(jh)
+    for dt in jh:
+        if dt.weekday() == 6:  # 日曜日
+            dt += _1DAY
+            while dt in sh:  # 振替
+                dt += _1DAY
+            sh.add(dt.replace(name="振替休日"))
+    sorted_sh = sorted(sh)
+    for d1, d2 in zip(sorted_sh[:-1], sorted_sh[1:]):
+        if (d2 - d1).days == 2 and d1.weekday() != 5:
+            sh.add((d1 + _1DAY).replace(name="国民の休日"))
+    return sh
+
+
+holidays.__doc__ = f"""日本の休日（{MIN_YEAR}-{MAX_YEAR}）"""
 
 
 class ColorTextCalendar(clndr.TextCalendar):
-    _theyear = -1
+    _the_year = -1
     _holiday: Set[datetime.date] = set()
-    _themonth = -1
+    _the_month = -1
 
     @staticmethod
-    def _set_theyear(theyear):
-        ColorTextCalendar._theyear = theyear
-        ColorTextCalendar._holiday = holiday(theyear)
+    def _set_the_year(the_year):
+        ColorTextCalendar._the_year = the_year
+        ColorTextCalendar._holiday = holidays(the_year)
 
     @staticmethod
     def _day(day):
         cls = ColorTextCalendar
-        return datetime.date(cls._theyear, cls._themonth, day)
+        return datetime.date(cls._the_year, cls._the_month, day)
 
     def formatday(self, day, weekday, width):
         return (
@@ -69,31 +141,31 @@ class ColorTextCalendar(clndr.TextCalendar):
         f1, f2 = "\x1b[1;31m%s\x1b[0m", "\x1b[1;36m%s\x1b[0m"
         return f1 % s if day == 6 else f2 % s if day == 5 else s
 
-    def formatmonth(self, theyear, themonth, width, withyear=True):
-        ColorTextCalendar._set_theyear(theyear)
-        ColorTextCalendar._themonth = themonth
-        return super().formatmonth(theyear, themonth, width, withyear)
+    def formatmonth(self, the_year, the_month, width, with_year=True):
+        ColorTextCalendar._set_the_year(the_year)
+        ColorTextCalendar._the_month = the_month
+        return super().formatmonth(the_year, the_month, width, with_year)
 
-    def formatyear(self, theyear, w=2, ln=1, c=6, m=3):
-        ColorTextCalendar._set_theyear(theyear)
+    def formatyear(self, the_year, w=2, ln=1, c=6, m=3):
+        ColorTextCalendar._set_the_year(the_year)
         w = max(2, w)
         ln = max(1, ln)
         c = max(2, c)
-        colwidth = (w + 1) * 7 - 1
+        col_width = (w + 1) * 7 - 1
         v = []
         a = v.append
-        a(repr(theyear).center(colwidth * m + c * (m - 1)).rstrip())
+        a(repr(the_year).center(col_width * m + c * (m - 1)).rstrip())
         a("\n" * ln)
         header = self.formatweekheader(w)
-        for (i, row) in enumerate(self.yeardays2calendar(theyear, m)):
+        for i, row in enumerate(self.yeardays2calendar(the_year, m)):
             # months in this row
             months = range(m * i + 1, min(m * (i + 1) + 1, 13))
             a("\n" * ln)
-            names = (self.formatmonthname(theyear, k, colwidth, False) for k in months)
-            a(clndr.formatstring(names, colwidth, c).rstrip())
+            names = (self.formatmonthname(the_year, k, col_width, False) for k in months)
+            a(clndr.formatstring(names, col_width, c).rstrip())
             a("\n" * ln)
             headers = (header for k in months)
-            a(clndr.formatstring(headers, colwidth, c).rstrip())
+            a(clndr.formatstring(headers, col_width, c).rstrip())
             a("\n" * ln)
             # max number of weeks for this row
             height = max(len(cal) for cal in row)
@@ -103,9 +175,9 @@ class ColorTextCalendar(clndr.TextCalendar):
                     if j >= len(cal):
                         weeks.append("")
                     else:
-                        ColorTextCalendar._themonth = k
+                        ColorTextCalendar._the_month = k
                         weeks.append(self.formatweek(cal[j], w))
-                a(clndr.formatstring(weeks, colwidth, c).rstrip())
+                a(clndr.formatstring(weeks, col_width, c).rstrip())
                 a("\n" * ln)
         return "".join(v)
 
@@ -123,12 +195,12 @@ prcal = _c.pryear
 
 
 def main():
-    theyear = int(sys.argv[1]) if len(sys.argv) > 1 else datetime.datetime.today().year
+    the_year = int(sys.argv[1]) if len(sys.argv) > 1 else datetime.datetime.today().year
     month = int(sys.argv[2]) if len(sys.argv) > 2 else None
-    if 1 <= theyear <= 12:
-        month = theyear
-        theyear = datetime.datetime.today().year
+    if 1 <= the_year <= 12:
+        month = the_year
+        the_year = datetime.datetime.today().year
     if month:
-        prmonth(theyear, month)
+        prmonth(the_year, month)
     else:
-        prcal(theyear)
+        prcal(the_year)

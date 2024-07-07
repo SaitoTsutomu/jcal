@@ -1,31 +1,16 @@
-from jcal import holiday
+import pytest
+from holidays import Japan
+
+from jcal import MAX_YEAR, MIN_YEAR, holidays
 
 
-def test_holiday2019():
-    actual = " ".join(f"{dt.month}/{dt.day}" for dt in sorted(holiday(2019)))
-    expect = "1/1 1/14 2/11 3/21 4/29 4/30 5/1 5/2 5/3 5/4 5/5 5/6 7/15 8/12 9/16 9/23 10/14 10/22 11/4 11/23"
-    assert actual == expect
-
-
-def test_holiday2020():
-    actual = " ".join(f"{dt.month}/{dt.day}" for dt in sorted(holiday(2020)))
-    expect = "1/1 1/13 2/11 2/24 3/20 4/29 5/4 5/5 5/6 7/23 7/24 8/10 9/21 9/22 11/3 11/23"
-    assert actual == expect
-
-
-def test_holiday2021():
-    actual = " ".join(f"{dt.month}/{dt.day}" for dt in sorted(holiday(2021)))
-    expect = "1/1 1/11 2/11 2/23 3/20 4/29 5/3 5/4 5/5 7/22 7/23 8/9 9/20 9/23 11/3 11/23"
-    assert actual == expect
-
-
-def test_holiday2022():
-    actual = " ".join(f"{dt.month}/{dt.day}" for dt in sorted(holiday(2022)))
-    expect = "1/1 1/10 2/11 2/23 3/21 4/29 5/3 5/4 5/5 7/18 8/11 9/19 9/23 10/10 11/3 11/23"
-    assert actual == expect
-
-
-def test_holiday2023():
-    actual = " ".join(f"{dt.month}/{dt.day}" for dt in sorted(holiday(2023)))
-    expect = "1/2 1/9 2/11 2/23 3/21 4/29 5/3 5/4 5/5 7/17 8/11 9/18 9/23 10/9 11/3 11/23"
-    assert actual == expect
+@pytest.mark.parametrize("year", range(MIN_YEAR, MAX_YEAR + 1))
+def test(year):
+    h0 = dict(Japan(years=year))
+    h1 = {d: d.name for d in holidays(year)}
+    df = set(h0) ^ set(h1)
+    assert df == set(), f"差分 {df}"
+    for dt in h1:
+        s0 = h0[dt]
+        s1 = h1[dt]
+        assert s0 == s1, f"名称違い {dt} {s0} {s1}"

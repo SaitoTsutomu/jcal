@@ -12,7 +12,7 @@ homepage = "https://github.com/SaitoTsutomu/jcal"
 license = "Apache-2.0"
 name = "jcal"
 readme = "README.md"
-version = "0.3"
+version = "1.0"
 
 [tool.poetry.scripts]
 jcal = "jcal:main"
@@ -21,8 +21,9 @@ jcal = "jcal:main"
 python = "^3.12"
 
 [tool.poetry.group.dev.dependencies]
-jupyterlab = "^4.1"
-pytest = "^8.1"
+holidays = "^0"
+jupyterlab = "^4.2"
+pytest = "^8.2"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
