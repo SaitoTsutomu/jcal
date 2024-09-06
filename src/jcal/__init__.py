@@ -2,6 +2,8 @@ import calendar as _calendar
 import datetime
 import sys
 import warnings
+from itertools import pairwise
+from typing import ClassVar
 
 _1DAY = datetime.timedelta(days=1)
 MIN_YEAR: int = 2000
@@ -102,19 +104,19 @@ def holidays(year: int) -> set[DateWithName]:
                 dt += _1DAY
             sh.add(dt.replace(name="振替休日"))
     sorted_sh = sorted(sh)
-    for d1, d2 in zip(sorted_sh[:-1], sorted_sh[1:]):
+    for d1, d2 in pairwise(sorted_sh):
         if (d2 - d1).days == 2 and d1.weekday() != 5:
             sh.add((d1 + _1DAY).replace(name="国民の休日"))
     return sh
 
 
-holidays.__doc__ = f"""日本の休日（{MIN_YEAR}-{MAX_YEAR}）"""
+holidays.__doc__ = f"""日本の休日({MIN_YEAR}-{MAX_YEAR})"""
 
 
 class ColorTextCalendar(_calendar.TextCalendar):
-    _the_year = -1
-    _holiday: set[datetime.date] = set()
-    _the_month = -1
+    _the_year: ClassVar[int] = -1
+    _holiday: ClassVar[set[datetime.date]] = set()
+    _the_month: ClassVar[int] = -1
 
     @staticmethod
     def _set_the_year(the_year):
@@ -172,7 +174,7 @@ class ColorTextCalendar(_calendar.TextCalendar):
             height = max(len(cal) for cal in row)
             for j in range(height):
                 weeks = []
-                for k, cal in zip(months, row):
+                for k, cal in zip(months, row, strict=False):
                     if j >= len(cal):
                         weeks.append("")
                     else:
