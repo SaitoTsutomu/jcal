@@ -1,6 +1,6 @@
 # jcal
 
-`jcal` is a package for Japanese holiday at 2019-2021.
+`jcal` is a package for Japanese holiday at 2000-2026.
 https://www8.cao.go.jp/chosei/shukujitsu/gaiyou.html
 
 ## Installation
@@ -13,26 +13,73 @@ pip install jcal
 
 ```python
 from pprint import pprint
-from jcal import holiday
+from jcal import holidays
 
-pprint(holiday(2023))
+pprint(holidays(2024))
 ```
 
 ```
-{datetime.date(2023, 1, 2),
- datetime.date(2023, 1, 9),
- datetime.date(2023, 2, 11),
- datetime.date(2023, 2, 23),
- datetime.date(2023, 3, 21),
- datetime.date(2023, 4, 29),
- datetime.date(2023, 5, 3),
- datetime.date(2023, 5, 4),
- datetime.date(2023, 5, 5),
- datetime.date(2023, 7, 17),
- datetime.date(2023, 8, 11),
- datetime.date(2023, 9, 18),
- datetime.date(2023, 9, 23),
- datetime.date(2023, 10, 9),
- datetime.date(2023, 11, 3),
- datetime.date(2023, 11, 23)}
+{2024-01-01 (元日),
+ 2024-01-08 (成人の日),
+ 2024-02-11 (建国記念の日),
+ 2024-02-12 (振替休日),
+ 2024-02-23 (天皇誕生日),
+ 2024-03-20 (春分の日),
+ 2024-04-29 (昭和の日),
+ 2024-05-03 (憲法記念日),
+ 2024-05-04 (みどりの日),
+ 2024-05-05 (こどもの日),
+ 2024-05-06 (振替休日),
+ 2024-07-15 (海の日),
+ 2024-08-11 (山の日),
+ 2024-08-12 (振替休日),
+ 2024-09-16 (敬老の日),
+ 2024-09-22 (秋分の日),
+ 2024-09-23 (振替休日),
+ 2024-10-14 (スポーツの日),
+ 2024-11-03 (文化の日),
+ 2024-11-04 (振替休日),
+ 2024-11-23 (勤労感謝の日)}
+```
+
+```sh
+jcal 2024
+```
+
+```
+                                  2024
+
+      January                   February                   March
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+ 1  2  3  4  5  6  7                1  2  3  4                   1  2  3
+ 8  9 10 11 12 13 14       5  6  7  8  9 10 11       4  5  6  7  8  9 10
+15 16 17 18 19 20 21      12 13 14 15 16 17 18      11 12 13 14 15 16 17
+22 23 24 25 26 27 28      19 20 21 22 23 24 25      18 19 20 21 22 23 24
+29 30 31                  26 27 28 29               25 26 27 28 29 30 31
+
+       April                      May                       June
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+ 1  2  3  4  5  6  7             1  2  3  4  5                      1  2
+ 8  9 10 11 12 13 14       6  7  8  9 10 11 12       3  4  5  6  7  8  9
+15 16 17 18 19 20 21      13 14 15 16 17 18 19      10 11 12 13 14 15 16
+22 23 24 25 26 27 28      20 21 22 23 24 25 26      17 18 19 20 21 22 23
+29 30                     27 28 29 30 31            24 25 26 27 28 29 30
+
+        July                     August                  September
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+ 1  2  3  4  5  6  7                1  2  3  4                         1
+ 8  9 10 11 12 13 14       5  6  7  8  9 10 11       2  3  4  5  6  7  8
+15 16 17 18 19 20 21      12 13 14 15 16 17 18       9 10 11 12 13 14 15
+22 23 24 25 26 27 28      19 20 21 22 23 24 25      16 17 18 19 20 21 22
+29 30 31                  26 27 28 29 30 31         23 24 25 26 27 28 29
+                                                    30
+
+      October                   November                  December
+Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su      Mo Tu We Th Fr Sa Su
+    1  2  3  4  5  6                   1  2  3                         1
+ 7  8  9 10 11 12 13       4  5  6  7  8  9 10       2  3  4  5  6  7  8
+14 15 16 17 18 19 20      11 12 13 14 15 16 17       9 10 11 12 13 14 15
+21 22 23 24 25 26 27      18 19 20 21 22 23 24      16 17 18 19 20 21 22
+28 29 30 31               25 26 27 28 29 30         23 24 25 26 27 28 29
+                                                    30 31
 ```

@@ -1,8 +1,7 @@
-import calendar as clndr
+import calendar as _calendar
 import datetime
 import sys
 import warnings
-from typing import Set
 
 _1DAY = datetime.timedelta(days=1)
 MIN_YEAR: int = 2000
@@ -12,6 +11,8 @@ MAX_YEAR: int = 2026
 class DateWithName(datetime.date):
     """名前付きdate"""
 
+    name: str
+
     def __new__(cls, year: int, month: int, day: int, name: str = ""):
         dt = super().__new__(cls, year, month, day)
         dt.name = name
@@ -20,7 +21,7 @@ class DateWithName(datetime.date):
     def __repr__(self):
         return f"{self} ({self.name})"
 
-    def replace(self, **kwargs) -> "DateWithName":
+    def replace(self, **kwargs) -> "DateWithName":  # type: ignore
         year = kwargs.pop("year", self.year)
         month = kwargs.pop("month", self.month)
         day = kwargs.pop("day", self.day)
@@ -110,9 +111,9 @@ def holidays(year: int) -> set[DateWithName]:
 holidays.__doc__ = f"""日本の休日（{MIN_YEAR}-{MAX_YEAR}）"""
 
 
-class ColorTextCalendar(clndr.TextCalendar):
+class ColorTextCalendar(_calendar.TextCalendar):
     _the_year = -1
-    _holiday: Set[datetime.date] = set()
+    _holiday: set[datetime.date] = set()
     _the_month = -1
 
     @staticmethod
@@ -162,10 +163,10 @@ class ColorTextCalendar(clndr.TextCalendar):
             months = range(m * i + 1, min(m * (i + 1) + 1, 13))
             a("\n" * ln)
             names = (self.formatmonthname(the_year, k, col_width, False) for k in months)
-            a(clndr.formatstring(names, col_width, c).rstrip())
+            a(_calendar.formatstring(names, col_width, c).rstrip())
             a("\n" * ln)
             headers = (header for k in months)
-            a(clndr.formatstring(headers, col_width, c).rstrip())
+            a(_calendar.formatstring(headers, col_width, c).rstrip())
             a("\n" * ln)
             # max number of weeks for this row
             height = max(len(cal) for cal in row)
@@ -177,7 +178,7 @@ class ColorTextCalendar(clndr.TextCalendar):
                     else:
                         ColorTextCalendar._the_month = k
                         weeks.append(self.formatweek(cal[j], w))
-                a(clndr.formatstring(weeks, col_width, c).rstrip())
+                a(_calendar.formatstring(weeks, col_width, c).rstrip())
                 a("\n" * ln)
         return "".join(v)
 
