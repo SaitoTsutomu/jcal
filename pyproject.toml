@@ -22,7 +22,7 @@ homepage = "https://github.com/SaitoTsutomu/jcal"
 jcal = "jcal:main"
 
 [tool.mypy]
-ignore_missing_imports = 1
+ignore_missing_imports = true
 
 [tool.ruff]
 src = ["src"]
