@@ -3,8 +3,13 @@ import datetime
 import sys
 import warnings
 from calendar import SATURDAY, SUNDAY
+from importlib.metadata import metadata
 from itertools import pairwise
 from typing import ClassVar, Final, Self, SupportsIndex, overload
+
+_package_metadata = metadata(__package__)
+__version__ = _package_metadata["Version"]
+__author__ = _package_metadata.get("Author-email", "")
 
 _1DAY = datetime.timedelta(days=1)
 MIN_YEAR: Final[int] = 2000
