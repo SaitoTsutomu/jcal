@@ -7,7 +7,7 @@ from importlib.metadata import metadata
 from itertools import pairwise
 from typing import ClassVar, Final, Self, SupportsIndex, overload
 
-_package_metadata = metadata(__package__)
+_package_metadata = metadata(str(__package__))
 __version__ = _package_metadata["Version"]
 __author__ = _package_metadata.get("Author-email", "")
 
@@ -36,7 +36,7 @@ class DateWithName(datetime.date):
     @overload
     def replace(self, **kwargs) -> Self: ...
 
-    def replace(self, **kwargs):
+    def replace(self, **kwargs):  # type: ignore[reportInconsistentOverload]
         year = kwargs.pop("year", self.year)
         month = kwargs.pop("month", self.month)
         day = kwargs.pop("day", self.day)
@@ -129,7 +129,7 @@ holidays.__doc__ = f"""日本の休日({MIN_YEAR}-{MAX_YEAR})"""
 
 class ColorTextCalendar(_calendar.TextCalendar):
     _the_year: ClassVar[int] = -1
-    _holiday: ClassVar[set[datetime.date]] = set()
+    _holiday: ClassVar[set[DateWithName]] = set()
     _themonth: ClassVar[int] = -1
 
     @staticmethod
@@ -179,10 +179,10 @@ class ColorTextCalendar(_calendar.TextCalendar):
             months = range(m * i + 1, min(m * (i + 1) + 1, 13))
             a("\n" * ln)
             names = (self.formatmonthname(theyear, k, col_width, withyear=False) for k in months)
-            a(_calendar.formatstring(names, col_width, c).rstrip())
+            a(_calendar.formatstring(names, col_width, c).rstrip())  # type: ignore[reportArgumentType]
             a("\n" * ln)
             headers = (header for k in months)
-            a(_calendar.formatstring(headers, col_width, c).rstrip())
+            a(_calendar.formatstring(headers, col_width, c).rstrip())  # type: ignore[reportArgumentType]
             a("\n" * ln)
             # max number of weeks for this row
             height = max(len(cal) for cal in row)
@@ -193,8 +193,8 @@ class ColorTextCalendar(_calendar.TextCalendar):
                         weeks.append("")
                     else:
                         ColorTextCalendar._themonth = k
-                        weeks.append(self.formatweek(cal[j], w))
-                a(_calendar.formatstring(weeks, col_width, c).rstrip())
+                        weeks.append(self.formatweek(cal[j], w))  # type: ignore[reportArgumentType]
+                a(_calendar.formatstring(weeks, col_width, c).rstrip())  # type: ignore[reportArgumentType]
                 a("\n" * ln)
         return "".join(v)
 
