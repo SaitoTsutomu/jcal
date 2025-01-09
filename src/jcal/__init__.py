@@ -200,7 +200,7 @@ class ColorTextCalendar(_calendar.TextCalendar):
 
 
 def main():
-    _c = ColorTextCalendar()
+    _c = ColorTextCalendar()  # noqa: RUF052
     prmonth = _c.prmonth
     prcal = _c.pryear
     theyear = int(sys.argv[1]) if len(sys.argv) > 1 else datetime.datetime.today().year
