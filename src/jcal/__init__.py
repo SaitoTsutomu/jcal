@@ -13,7 +13,7 @@ __author__ = _package_metadata.get("Author-email", "")
 
 _1DAY = datetime.timedelta(days=1)
 MIN_YEAR: Final[int] = 2000
-MAX_YEAR: Final[int] = 2026
+MAX_YEAR: Final[int] = 2027
 NUM_MONTH: Final[int] = 12
 
 
@@ -36,7 +36,7 @@ class DateWithName(datetime.date):
     @overload
     def replace(self, **kwargs) -> Self: ...
 
-    def replace(self, **kwargs):  # type: ignore[reportInconsistentOverload]
+    def replace(self, **kwargs):
         year = kwargs.pop("year", self.year)
         month = kwargs.pop("month", self.month)
         day = kwargs.pop("day", self.day)
@@ -146,11 +146,11 @@ class ColorTextCalendar(_calendar.TextCalendar):
         return (
             ""
             if day == 0
-            else f"\x1b[1;31m{day:02}\x1b[0m"
+            else f"\x1b[1;31m{day:2}\x1b[0m"
             if weekday == SUNDAY or ColorTextCalendar._day(day) in ColorTextCalendar._holiday
-            else f"\x1b[1;36m{day:02}\x1b[0m"
+            else f"\x1b[1;36m{day:2}\x1b[0m"
             if weekday == SATURDAY
-            else f"{day:02}"
+            else f"{day:2}"
         ).center(width)
 
     def formatweekday(self, day, width):

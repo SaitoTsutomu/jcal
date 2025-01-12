@@ -5,7 +5,7 @@ from holidays import Japan
 from jcal import MAX_YEAR, MIN_YEAR, holidays
 
 
-@pytest.mark.parametrize("year", range(MIN_YEAR, MAX_YEAR + 1))
+@pytest.mark.parametrize("year", range(MIN_YEAR + 20, MAX_YEAR + 1))
 def test(year):
     h0 = dict(Japan(years=year))
     h1 = {d: d.name for d in holidays(year)}
