@@ -1,6 +1,7 @@
 # ruff: noqa: RUF067
 import calendar as _calendar
 import datetime
+import operator
 import sys
 import warnings
 from calendar import SATURDAY, SUNDAY
@@ -39,11 +40,11 @@ class DateWithName(datetime.date):
         *,
         name: str | None = None,
     ) -> Self:
-        year = int(year or self.year)
-        month = int(month or self.month)
-        day = int(day or self.day)
-        name = name or self.name
-        return DateWithName(year, month, day, name)
+        year_ = self.year if year is None else operator.index(year)
+        month_ = self.month if month is None else operator.index(month)
+        day_ = self.day if day is None else operator.index(day)
+        name_ = self.name if name is None else name
+        return DateWithName(year_, month_, day_, name_)
 
 
 def _japanese_holidays(year: int) -> list[DateWithName]:
