@@ -12,8 +12,15 @@ description = "`jcal` is a package for Japanese holiday."
 license = {text = "Apache-2.0"}
 name = "jcal"
 readme = "README.md"
-requires-python = ">=3.11"
-version = "1.2.2"
+requires-python = ">=3.14"
+version = "2026.05.04"
+
+[dependency-groups]
+dev = [
+  "holidays>=0.95",
+  "jupyter>=1.1.1",
+  "pytest>=9.0.3",
+]
 
 [project.urls]
 homepage = "https://github.com/SaitoTsutomu/jcal"
@@ -21,24 +28,42 @@ homepage = "https://github.com/SaitoTsutomu/jcal"
 [project.scripts]
 jcal = "jcal:main"
 
-[tool.uv]
-dev-dependencies = [
-  "holidays>=0.64",
-  "jupyterlab>=4.3.4",
-  "pytest>=8.3.4",
-]
+[tool.taskipy.tasks]
+jupyter = "uv run jupyter lab -y nbs"
+license = "uv run -w pip-licenses pip-licenses"
+lint = "ruff check && pyrefly check"
+pip-audit = "uv run -w pip-audit pip-audit"
+test = "uv run pytest"
 
-[tool.mypy]
-files = "src"
-ignore_missing_imports = true
+[tool.uv]
+exclude-newer = "3 days"
+
+[[tool.uv.index]]
+default = true
+url = "https://pypi.flatt.tech/simple/"
 
 [tool.ruff]
+exclude = ["*.ipynb", "nbs"]
 src = ["src"]
 
 [tool.ruff.lint]
-ignore = ["ANN", "CPY", "D", "DOC201", "DTZ002", "E501"]
+ignore = [
+  "COM812",
+  "CPY",
+  "D203",
+  "D213",
+  "D400",
+  "D415",
+  "DOC201",
+  "DOC501",
+  "E501",
+  "INP001",
+]
 preview = true
 select = ["ALL"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"*/tests/*.py" = ["S101"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 11
@@ -54,9 +79,9 @@ addopts = [
 ]
 testpaths = "src/tests"
 
-[tool.pyright]
-reportMissingImports = false
+[tool.pyrefly.errors]
+missing-module-attribute = false
 
 [build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling"]
+build-backend = "uv_build"
+requires = ["uv_build>=0.11.6,<0.12.0"]

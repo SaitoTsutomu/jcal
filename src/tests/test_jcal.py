@@ -1,4 +1,3 @@
-# flake8: noqa: S101
 import pytest
 from holidays import Japan
 
