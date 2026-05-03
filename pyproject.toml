@@ -48,14 +48,17 @@ src = ["src"]
 
 [tool.ruff.lint]
 ignore = [
+  "ANN204",
   "COM812",
   "CPY",
+  "D10",
   "D203",
   "D213",
   "D400",
   "D415",
   "DOC201",
   "DOC501",
+  "DTZ002",
   "E501",
   "INP001",
 ]

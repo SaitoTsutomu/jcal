@@ -1,3 +1,4 @@
+# ruff: noqa: RUF067
 import calendar as _calendar
 import datetime
 import sys
@@ -5,7 +6,7 @@ import warnings
 from calendar import SATURDAY, SUNDAY
 from importlib.metadata import metadata
 from itertools import pairwise
-from typing import ClassVar, Final, Self, SupportsIndex, overload
+from typing import ClassVar, Final, Self, SupportsIndex
 
 _package_metadata = metadata(str(__package__))
 __version__ = _package_metadata["Version"]
@@ -22,29 +23,26 @@ class DateWithName(datetime.date):
 
     name: str
 
-    def __new__(cls, year: int, month: int, day: int, name: str = ""):
+    def __new__(cls, year: int, month: int, day: int, name: str = "") -> Self:
         dt = super().__new__(cls, year, month, day)
         dt.name = name
         return dt
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self} ({self.name})"
 
-    @overload
-    def replace(self, year: SupportsIndex = ..., month: SupportsIndex = ..., day: SupportsIndex = ...) -> Self: ...
-
-    @overload
-    def replace(self, **kwargs) -> Self: ...
-
-    def replace(self, **kwargs):
-        year = kwargs.pop("year", self.year)
-        month = kwargs.pop("month", self.month)
-        day = kwargs.pop("day", self.day)
-        name = kwargs.pop("name", self.name)
-        if kwargs:
-            k = next(iter(kwargs))
-            msg = f"'{k}' is an invalid keyword argument for replace()"
-            raise TypeError(msg)
+    def replace(
+        self,
+        year: SupportsIndex | None = None,
+        month: SupportsIndex | None = None,
+        day: SupportsIndex | None = None,
+        *,
+        name: str | None = None,
+    ) -> Self:
+        year = int(year or self.year)
+        month = int(month or self.month)
+        day = int(day or self.day)
+        name = name or self.name
         return DateWithName(year, month, day, name)
 
 
@@ -107,6 +105,7 @@ def _japanese_holidays(year: int) -> list[DateWithName]:
 
 
 def holidays(year: int) -> set[DateWithName]:
+    """日本の休日"""
     if not (MIN_YEAR <= year <= MAX_YEAR):
         warnings.warn(f"Not applicable for the year {year}.", DeprecationWarning, stacklevel=2)
     jh = _japanese_holidays(year)
@@ -128,21 +127,24 @@ holidays.__doc__ = f"""日本の休日({MIN_YEAR}-{MAX_YEAR})"""
 
 
 class ColorTextCalendar(_calendar.TextCalendar):
+    """色付きカレンダー"""
+
     _the_year: ClassVar[int] = -1
     _holiday: ClassVar[set[DateWithName]] = set()
     _themonth: ClassVar[int] = -1
 
     @staticmethod
-    def _set_the_year(theyear):
+    def _set_the_year(theyear: int) -> None:
         ColorTextCalendar._the_year = theyear
         ColorTextCalendar._holiday = holidays(theyear)
 
     @staticmethod
-    def _day(day):
+    def _day(day: int) -> datetime.date:
         cls = ColorTextCalendar
         return datetime.date(cls._the_year, cls._themonth, day)
 
-    def formatday(self, day, weekday, width):  # noqa: PLR6301
+    @classmethod
+    def formatday(cls, day: int, weekday: int, width: int) -> str:
         return (
             ""
             if day == 0
@@ -153,17 +155,17 @@ class ColorTextCalendar(_calendar.TextCalendar):
             else f"{day:2}"
         ).center(width)
 
-    def formatweekday(self, day, width):
+    def formatweekday(self, day: int, width: int) -> str:
         s = super().formatweekday(day, width)
         f1, f2 = "\x1b[1;31m%s\x1b[0m", "\x1b[1;36m%s\x1b[0m"
         return f1 % s if day == SUNDAY else f2 % s if day == SATURDAY else s
 
-    def formatmonth(self, theyear, themonth, w=0, l=0):  # noqa: E741
+    def formatmonth(self, theyear: int, themonth: int, w: int = 0, l: int = 0) -> str:  # noqa: E741
         ColorTextCalendar._set_the_year(theyear)
         ColorTextCalendar._themonth = themonth
         return super().formatmonth(theyear, themonth, w, l)
 
-    def formatyear(self, theyear, w=2, l=1, c=6, m=3):  # noqa: E741
+    def formatyear(self, theyear: int, w: int = 2, l: int = 1, c: int = 6, m: int = 3) -> str:  # noqa: E741
         ColorTextCalendar._set_the_year(theyear)
         w = max(2, w)
         ln = max(1, l)
@@ -199,7 +201,8 @@ class ColorTextCalendar(_calendar.TextCalendar):
         return "".join(v)
 
 
-def main():
+def main() -> None:
+    """メイン"""
     _c = ColorTextCalendar()  # noqa: RUF052
     prmonth = _c.prmonth
     prcal = _c.pryear

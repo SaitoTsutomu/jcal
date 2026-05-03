@@ -5,7 +5,8 @@ from jcal import MAX_YEAR, MIN_YEAR, holidays
 
 
 @pytest.mark.parametrize("year", range(MIN_YEAR + 20, MAX_YEAR + 1))
-def test(year):
+def test_with_holidays(year: int) -> None:
+    """holidays.Japanと比較"""
     h0 = dict(Japan(years=year))
     h1 = {d: d.name for d in holidays(year)}
     dif = set(h0) ^ set(h1)
