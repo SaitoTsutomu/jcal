@@ -7,7 +7,7 @@ import warnings
 from calendar import SATURDAY, SUNDAY
 from importlib.metadata import metadata
 from itertools import pairwise
-from typing import ClassVar, Final, Self, SupportsIndex
+from typing import Final, Self, SupportsIndex
 
 _package_metadata = metadata(str(__package__))
 __version__ = _package_metadata["Version"]
@@ -130,27 +130,29 @@ holidays.__doc__ = f"""日本の休日({MIN_YEAR}-{MAX_YEAR})"""
 class ColorTextCalendar(_calendar.TextCalendar):
     """色付きカレンダー"""
 
-    _the_year: ClassVar[int] = -1
-    _holiday: ClassVar[set[DateWithName]] = set()
-    _themonth: ClassVar[int] = -1
+    _the_year: int
+    _holiday: set[DateWithName]
+    _themonth: int
 
-    @staticmethod
-    def _set_the_year(theyear: int) -> None:
-        ColorTextCalendar._the_year = theyear
-        ColorTextCalendar._holiday = holidays(theyear)
+    def __init__(self, firstweekday: int = 0) -> None:
+        super().__init__(firstweekday)
+        self._the_year = -1
+        self._holiday = set()
+        self._themonth = -1
 
-    @staticmethod
-    def _day(day: int) -> datetime.date:
-        cls = ColorTextCalendar
-        return datetime.date(cls._the_year, cls._themonth, day)
+    def _set_the_year(self, theyear: int) -> None:
+        self._the_year = theyear
+        self._holiday = holidays(theyear)
 
-    @classmethod
-    def formatday(cls, day: int, weekday: int, width: int) -> str:
+    def _day(self, day: int) -> datetime.date:
+        return datetime.date(self._the_year, self._themonth, day)
+
+    def formatday(self, day: int, weekday: int, width: int) -> str:
         return (
             ""
             if day == 0
             else f"\x1b[1;31m{day:2}\x1b[0m"
-            if weekday == SUNDAY or ColorTextCalendar._day(day) in ColorTextCalendar._holiday
+            if weekday == SUNDAY or self._day(day) in self._holiday
             else f"\x1b[1;36m{day:2}\x1b[0m"
             if weekday == SATURDAY
             else f"{day:2}"
@@ -162,12 +164,12 @@ class ColorTextCalendar(_calendar.TextCalendar):
         return f1 % s if day == SUNDAY else f2 % s if day == SATURDAY else s
 
     def formatmonth(self, theyear: int, themonth: int, w: int = 0, l: int = 0) -> str:  # noqa: E741
-        ColorTextCalendar._set_the_year(theyear)
-        ColorTextCalendar._themonth = themonth
+        self._set_the_year(theyear)
+        self._themonth = themonth
         return super().formatmonth(theyear, themonth, w, l)
 
     def formatyear(self, theyear: int, w: int = 2, l: int = 1, c: int = 6, m: int = 3) -> str:  # noqa: E741
-        ColorTextCalendar._set_the_year(theyear)
+        self._set_the_year(theyear)
         w = max(2, w)
         ln = max(1, l)
         c = max(2, c)
@@ -195,7 +197,7 @@ class ColorTextCalendar(_calendar.TextCalendar):
                     if j >= len(cal):
                         weeks.append("")
                     else:
-                        ColorTextCalendar._themonth = k
+                        self._themonth = k
                         weeks.append(self.formatweek(cal[j], w))  # type: ignore[reportArgumentType]
                 a(_calendar.formatstring(weeks, col_width, c).rstrip())  # type: ignore[reportArgumentType]
                 a("\n" * ln)
