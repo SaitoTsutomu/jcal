@@ -2,14 +2,14 @@
 authors = [{name = "Saito Tsutomu", email = "tsutomu7@hotmail.co.jp"}]
 classifiers = [
   "Development Status :: 1 - Planning",
-  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
 ]
 dependencies = []
 description = "`jcal` is a package for Japanese holiday."
-license = {text = "Apache-2.0"}
+license = "Apache-2.0"
+license-files = ["LICENSE*"]
 name = "jcal"
 readme = "README.md"
 requires-python = ">=3.14"
