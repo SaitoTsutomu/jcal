@@ -1,5 +1,5 @@
 import pytest
-from holidays import Japan
+from holidays.countries.japan import Japan
 
 from jcal import MAX_YEAR, MIN_YEAR, holidays
 
