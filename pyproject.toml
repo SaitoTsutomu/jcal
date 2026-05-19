@@ -42,6 +42,9 @@ exclude-newer = "3 days"
 default = true
 url = "https://pypi.flatt.tech/simple/"
 
+[tool.pyrefly]
+project-includes = ["src"]
+
 [tool.ruff]
 exclude = ["*.ipynb", "nbs"]
 src = ["src"]
