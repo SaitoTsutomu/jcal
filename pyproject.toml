@@ -32,7 +32,6 @@ jcal = "jcal:main"
 jupyter = "uv run jupyter lab -y nbs"
 license = "uv run -w pip-licenses pip-licenses"
 lint = "ruff check && pyrefly check"
-pip-audit = "uv run -w pip-audit pip-audit"
 test = "uv run pytest"
 
 [tool.uv]
