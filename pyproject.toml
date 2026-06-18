@@ -13,7 +13,7 @@ license-files = ["LICENSE*"]
 name = "jcal"
 readme = "README.md"
 requires-python = ">=3.14"
-version = "2026.05.04"
+version = "2026.06.18"
 
 [dependency-groups]
 dev = [
@@ -63,6 +63,7 @@ ignore = [
   "DTZ002",
   "E501",
   "INP001",
+  "PLR2004",
 ]
 preview = true
 select = ["ALL"]

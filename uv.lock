@@ -463,7 +463,7 @@ wheels = [
 
 [[package]]
 name = "jcal"
-version = "2026.5.4"
+version = "2026.6.18"
 source = { editable = "." }
 
 [package.dev-dependencies]
