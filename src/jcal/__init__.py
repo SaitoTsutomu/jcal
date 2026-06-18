@@ -8,7 +8,6 @@ from .holidays import (
     holidays,
     main,
 )
-from .html import ColorHTMLCalendar, calendar_html, calendar_html2
 
 _package_metadata = metadata(str(__package__))  # noqa: RUF067
 __version__ = _package_metadata["Version"]
@@ -17,11 +16,8 @@ __author__ = _package_metadata.get("Author-email", "")
 __all__ = [
     "MAX_YEAR",
     "MIN_YEAR",
-    "ColorHTMLCalendar",
     "ColorTextCalendar",
     "DateWithName",
-    "calendar_html",
-    "calendar_html2",
     "holidays",
     "main",
 ]
