@@ -38,7 +38,7 @@ class DateWithName(datetime.date):
         month_ = self.month if month is None else operator.index(month)
         day_ = self.day if day is None else operator.index(day)
         name_ = self.name if name is None else name
-        return DateWithName(year_, month_, day_, name_)
+        return self.__class__(year_, month_, day_, name_)
 
 
 def _japanese_holidays(year: int) -> list[DateWithName]:
@@ -157,12 +157,12 @@ class ColorTextCalendar(_calendar.TextCalendar):
         f1, f2 = "\x1b[1;31m%s\x1b[0m", "\x1b[1;36m%s\x1b[0m"
         return f1 % s if day == SUNDAY else f2 % s if day == SATURDAY else s
 
-    def formatmonth(self, theyear: int, themonth: int, w: int = 0, l: int = 0) -> str:  # noqa: E741
+    def formatmonth(self, theyear: int, themonth: int, w: int = 0, l: int = 0) -> str:  # ruff:ignore[ambiguous-variable-name]
         self._set_the_year(theyear)
         self._themonth = themonth
         return super().formatmonth(theyear, themonth, w, l)
 
-    def formatyear(self, theyear: int, w: int = 2, l: int = 1, c: int = 6, m: int = 3) -> str:  # noqa: E741
+    def formatyear(self, theyear: int, w: int = 2, l: int = 1, c: int = 6, m: int = 3) -> str:  # ruff:ignore[ambiguous-variable-name]
         self._set_the_year(theyear)
         w = max(2, w)
         ln = max(1, l)
@@ -200,7 +200,7 @@ class ColorTextCalendar(_calendar.TextCalendar):
 
 def main() -> None:
     """メイン"""
-    _c = ColorTextCalendar()  # noqa: RUF052
+    _c = ColorTextCalendar()  # ruff:ignore[used-dummy-variable]
     prmonth = _c.prmonth
     prcal = _c.pryear
     theyear = int(sys.argv[1]) if len(sys.argv) > 1 else datetime.datetime.today().year

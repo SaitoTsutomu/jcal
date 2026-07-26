@@ -1,16 +1,16 @@
 import calendar as _calendar
 import datetime
+import locale
 
 from . import holidays
 
-_calendar.day_abbr = ["月", "火", "水", "木", "金", "土", "日"]
-_calendar.month_name = ["", "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+locale.setlocale(locale.LC_TIME, "ja_JP.UTF-8")
 
 
 class ColorHTMLCalendar(_calendar.HTMLCalendar):
     """色付きHTMLカレンダー"""
 
-    def formatmonth(self, theyear: int, themonth: int, withyear: bool = True) -> str:  # noqa: FBT001 FBT002
+    def formatmonth(self, theyear: int, themonth: int, withyear: bool = True) -> str:  # ruff:ignore[boolean-type-hint-positional-argument, boolean-default-value-positional-argument]
         self.current_year = theyear
         self.current_month = themonth
         self.holiday_set = holidays(theyear)

@@ -50,26 +50,26 @@ src = ["src"]
 
 [tool.ruff.lint]
 ignore = [
-  "ANN204",
-  "COM812",
+  "missing-return-type-special-method",
+  "missing-trailing-comma",
   "CPY",
   "D10",
-  "D203",
-  "D213",
-  "D400",
-  "D415",
-  "DOC201",
-  "DOC501",
-  "DTZ002",
-  "E501",
-  "INP001",
-  "PLR2004",
+  "incorrect-blank-line-before-class",
+  "multi-line-summary-second-line",
+  "missing-trailing-period",
+  "missing-terminal-punctuation",
+  "docstring-missing-returns",
+  "docstring-missing-exception",
+  "call-datetime-today",
+  "line-too-long",
+  "implicit-namespace-package",
+  "magic-value-comparison",
 ]
 preview = true
 select = ["ALL"]
 
 [tool.ruff.lint.extend-per-file-ignores]
-"*/tests/*.py" = ["S101"]
+"*/tests/*.py" = ["assert"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 11
