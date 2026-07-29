@@ -87,4 +87,4 @@ testpaths = "src/tests"
 
 [build-system]
 build-backend = "uv_build"
-requires = ["uv_build>=0.11.6,<0.12.0"]
+requires = ["uv_build>=0.12.0,<0.13.0"]
