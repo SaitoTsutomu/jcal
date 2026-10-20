@@ -1,5 +1,5 @@
 import calendar as _calendar
-import datetime
+import datetime as dt
 import locale
 
 from . import holidays
@@ -19,8 +19,8 @@ class ColorHTMLCalendar(_calendar.HTMLCalendar):
     def formatday(self, day: int, weekday: int) -> str:
         if day == 0:
             return '<td class="noday">&nbsp;</td>'
-        dt = datetime.date(self.current_year, self.current_month, day)
-        if weekday == _calendar.SUNDAY or dt in self.holiday_set:
+        date = dt.date(self.current_year, self.current_month, day)
+        if weekday == _calendar.SUNDAY or date in self.holiday_set:
             cls = "holiday"  # 日曜日または祝日
         elif weekday == _calendar.SATURDAY:
             cls = "saturday"  # 土曜日

@@ -1,5 +1,5 @@
 import calendar as _calendar
-import datetime
+import datetime as dt
 import operator
 import sys
 import warnings
@@ -7,21 +7,21 @@ from calendar import SATURDAY, SUNDAY
 from itertools import pairwise
 from typing import Final, Self, SupportsIndex
 
-_1DAY = datetime.timedelta(days=1)
+_1DAY = dt.timedelta(days=1)
 MIN_YEAR: Final[int] = 2000
 MAX_YEAR: Final[int] = 2027
 NUM_MONTH: Final[int] = 12
 
 
-class DateWithName(datetime.date):
+class DateWithName(dt.date):
     """名前付きdate"""
 
     name: str
 
     def __new__(cls, year: int, month: int, day: int, name: str = "") -> Self:
-        dt = super().__new__(cls, year, month, day)
-        dt.name = name
-        return dt
+        date = super().__new__(cls, year, month, day)
+        date.name = name
+        return date
 
     def __repr__(self) -> str:
         return f"{self} ({self.name})"
@@ -92,10 +92,10 @@ def _japanese_holidays(year: int) -> list[DateWithName]:
             sh |= {(7, 22, "海の日"), (7, 23, "スポーツの日"), (8, 8, "山の日")}
     jh = []
     for month, day, name in sh:
-        dt = datetime.date(year, month, max(1, day))
+        date = dt.date(year, month, max(1, day))
         if day < 0:  # 第N月曜日の計算
-            dt += ((7 - dt.weekday()) % 7 + 7 * (-1 - day)) * _1DAY
-        jh.append(DateWithName(dt.year, dt.month, dt.day, name))
+            date += ((7 - date.weekday()) % 7 + 7 * (-1 - day)) * _1DAY
+        jh.append(DateWithName(date.year, date.month, date.day, name))
     return sorted(jh)
 
 
@@ -105,12 +105,12 @@ def holidays(year: int) -> set[DateWithName]:
         warnings.warn(f"Not applicable for the year {year}.", DeprecationWarning, stacklevel=2)
     jh = _japanese_holidays(year)
     sh = set(jh)
-    for dt in jh:
-        if dt.weekday() == SUNDAY:
-            dt_ = dt + _1DAY
-            while dt_ in sh:  # 振替
-                dt_ += _1DAY
-            sh.add(dt_.replace(name="振替休日"))
+    for date in jh:
+        if date.weekday() == SUNDAY:
+            date_ = date + _1DAY
+            while date_ in sh:  # 振替
+                date_ += _1DAY
+            sh.add(date_.replace(name="振替休日"))
     sorted_sh = sorted(sh)
     for d1, d2 in pairwise(sorted_sh):
         if (d2 - d1).days == 2 and d1.weekday() != SATURDAY:
@@ -138,8 +138,8 @@ class ColorTextCalendar(_calendar.TextCalendar):
         self._the_year = theyear
         self._holiday = holidays(theyear)
 
-    def _day(self, day: int) -> datetime.date:
-        return datetime.date(self._the_year, self._themonth, day)
+    def _day(self, day: int) -> dt.date:
+        return dt.date(self._the_year, self._themonth, day)
 
     def formatday(self, day: int, weekday: int, width: int) -> str:
         return (
@@ -178,10 +178,10 @@ class ColorTextCalendar(_calendar.TextCalendar):
             months = range(m * i + 1, min(m * (i + 1) + 1, 13))
             a("\n" * ln)
             names = (self.formatmonthname(theyear, k, col_width, withyear=False) for k in months)
-            a(_calendar.formatstring(names, col_width, c).rstrip())  # type: ignore[reportArgumentType]
+            a(_calendar.formatstring(names, col_width, c).rstrip())
             a("\n" * ln)
             headers = (header for k in months)
-            a(_calendar.formatstring(headers, col_width, c).rstrip())  # type: ignore[reportArgumentType]
+            a(_calendar.formatstring(headers, col_width, c).rstrip())
             a("\n" * ln)
             # max number of weeks for this row
             height = max(len(cal) for cal in row)
@@ -192,22 +192,22 @@ class ColorTextCalendar(_calendar.TextCalendar):
                         weeks.append("")
                     else:
                         self._themonth = k
-                        weeks.append(self.formatweek(cal[j], w))  # type: ignore[reportArgumentType]
-                a(_calendar.formatstring(weeks, col_width, c).rstrip())  # type: ignore[reportArgumentType]
+                        weeks.append(self.formatweek(cal[j], w))
+                a(_calendar.formatstring(weeks, col_width, c).rstrip())
                 a("\n" * ln)
         return "".join(v)
 
 
 def main() -> None:
     """メイン"""
-    _c = ColorTextCalendar()  # ruff:ignore[used-dummy-variable]
-    prmonth = _c.prmonth
-    prcal = _c.pryear
-    theyear = int(sys.argv[1]) if len(sys.argv) > 1 else datetime.datetime.today().year
+    c_ = ColorTextCalendar()
+    prmonth = c_.prmonth
+    prcal = c_.pryear
+    theyear = int(sys.argv[1]) if len(sys.argv) > 1 else dt.datetime.today().year
     month = int(sys.argv[2]) if len(sys.argv) > 2 else None
     if 1 <= theyear <= NUM_MONTH:
         month = theyear
-        theyear = datetime.datetime.today().year
+        theyear = dt.datetime.today().year
     if month:
         prmonth(theyear, month)
     else:
