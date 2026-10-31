@@ -1,7 +1,6 @@
 [project]
 authors = [{name = "Saito Tsutomu", email = "tsutomu7@hotmail.co.jp"}]
 classifiers = [
-  "Development Status :: 1 - Planning",
   "Programming Language :: Python",
   "Topic :: Software Development",
   "Topic :: Scientific/Engineering",
@@ -13,7 +12,7 @@ license-files = ["LICENSE*"]
 name = "jcal"
 readme = "README.md"
 requires-python = ">=3.14"
-version = "2026.10.20"
+version = "2026.10.31"
 
 [dependency-groups]
 dev = [

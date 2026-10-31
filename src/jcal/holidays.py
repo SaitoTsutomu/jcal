@@ -102,7 +102,7 @@ def _japanese_holidays(year: int) -> list[DateWithName]:
 def holidays(year: int) -> set[DateWithName]:
     """日本の休日"""
     if not (MIN_YEAR <= year <= MAX_YEAR):
-        warnings.warn(f"Not applicable for the year {year}.", DeprecationWarning, stacklevel=2)
+        warnings.warn(f"Not applicable for the year {year}.", UserWarning, stacklevel=2)
     jh = _japanese_holidays(year)
     sh = set(jh)
     for date in jh:
